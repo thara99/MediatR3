@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR3.Database;
 using MediatR;
+using Microsoft.OpenApi.Models;
 
 namespace MediatR3
 {
@@ -19,6 +20,10 @@ namespace MediatR3
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediatR", Version = "v1" });
+            });
             services.AddSingleton<Repository>();
             services.AddMediatR(typeof(Startup).Assembly);
 
@@ -32,15 +37,13 @@ namespace MediatR3
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MediatR v1");
             });
+
+           
         }
     }
 }
